@@ -1,5 +1,6 @@
 use std::{collections::HashMap, hash::Hash};
 use super::traits::{ Framework };
+use super::converter::Converter;
 
 struct BootstrapFramework<'a> {
     media_options: HashMap<&'a str, &'a str>,
@@ -108,8 +109,84 @@ impl<'a> BootstrapFramework<'a> {
             ("pagination-lg", "text-xl"),
             ("pagination-sm", "text-sm"),
             ("page-link"    , "relative block py-2 px-3 -ml-px leading-normal text-blue bg-white border border-gray-200 no-underline hover:text-blue-800 hover:bg-gray-200"),
-            // 'page-link' => 'relative block py-2 px-3 -ml-px leading-normal text-blue bg-white border border-gray-',
+            // "page-link" , "relative block py-2 px-3 -ml-px leading-normal text-blue bg-white border border-gray-",
         ])
+    }
+
+    fn general(&self) -> HashMap<&'a str, &'a str> {
+        let main_classes = HashMap::from([
+            ("container-fluid", "container max-w-full mx-auto sm:px-4"),
+            ("container",  {
+                if Converter::isInLastSearches("jumbotron", 1) {
+                   "container mx-auto max-w-2xl sm:px-4"
+                } else {
+                 "container mx-auto sm:px-4"
+            }}),
+
+            //http://getbootstrap.com/docs/4.0/utilities/embed/
+            ("embed-responsive"       , ""),
+            ("embed-responsive-item"  , ""),
+            ("embed-responsive-21by9" , ""),
+            ("embed-responsive-16by9" , ""),
+            ("embed-responsive-4by3"  , ""),
+            ("embed-responsive-1by1"  , ""),
+
+            // http://getbootstrap.com/docs/4.0/utilities/image-replacement/
+            ("text-hide" , ""),
+
+            // http://getbootstrap.com/docs/4.0/utilities/screenreaders/
+            ("sr-only"           , "sr-only"),
+            ("sr-only-focusable" , "focus:not-sr-only"),
+
+            // http://getbootstrap.com/docs/4.0/content/images/
+            ("img-fluid"     , "max-w-full h-auto"),
+            ("img-thumbnail" , "max-w-full h-auto border-1 border-gray-200 rounded p-1"),
+
+            //http://getbootstrap.com/docs/4.0/content/tables/
+            ("table"    , "w-full max-w-full mb-4 bg-transparent"),
+            ("table-sm", "p-1"),
+            // 'table-bordered' , '',
+            // 'table-striped' , "",
+            ("table-responsive"                , "block w-full overflow-auto scrolling-touch"),
+            ("table-responsive-{regex_string}" , "block w-full overflow-auto scrolling-touch"),
+
+            //http://getbootstrap.com/docs/4.0/content/figures/
+            ("figure"         , "inline-block mb-4"),
+            ("figure-img"     , "mb-2 leading-none"),
+            ("figure-caption" , "text-gray-"),
+
+            ("fade"     , "opacity-0"),
+            ("show"     , "opacity-100 block"), //need to be checked
+            ("disabled" , "opacity-75"),
+
+            //http://getbootstrap.com/docs/4.0/components/collapse/
+            // "collapse" , "hidden",
+            ("collapsing" , "relative h-0 overflow-hidden "), //there should be a h-0
+
+            //http://getbootstrap.com/docs/4.0/utilities/close-icon/
+            ("close" , "absolute top-0 bottom-0 right-0 px-4 py-3"),
+
+            //http://getbootstrap.com/docs/4.0/components/jumbotron/
+            ("jumbotron"       , "py-8 px-4 md:py-16 md:px-8 mb-8 bg-gray-200 rounded"),
+            ("jumbotron-fluid" , "pr-0 pl-0 rounded-none"),
+        ]);
+
+        let main_classes_each_screen = HashMap::from([
+            ("container-{screen}"       , "container min-w-{screen} mx-auto sm:px-4")
+        ]);
+
+        let items = vec![];
+        foreach (main_classes as bt_class ,tw_class) {
+            items[bt_class] = tw_class;
+        }
+
+        foreach (main_classes_each_screen as bt_class , tw_class) {
+            foreach (self.media_options as bt_media , tw_media) {
+                items[str_replace("{screen}", bt_media, bt_class)] = str_replace("{screen}", tw_media, tw_class);
+            }
+        }
+
+        return items;
     }
 
 }
