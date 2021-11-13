@@ -9,6 +9,7 @@ struct BootstrapFramework<'a> {
 
 }
 
+
 impl<'a> Default for BootstrapFramework<'a> {
     fn default() -> BootstrapFramework<'a> {
         BootstrapFramework {
@@ -113,9 +114,32 @@ impl<'a> BootstrapFramework<'a> {
 
 }
 
-impl Framework for BootstrapFramework {
+impl<'a> Framework<'a> for BootstrapFramework<'a> {
 
+    fn default_css() -> HashMap<&'a str, &'a str>{
+        HashMap::from([
+            ("h1", ""),
+            ("fieldset", ""),
+            ("del", ""),
+            ("a" ,""),
+            ("p" ,""),
+        ])
+    }
 
-    // fn()
+    fn framework_name() -> &'static str {
+        "Bootstrap"
+    }
 
+    fn supported_version() -> Vec<&'static str> {
+        vec![
+            "4.4.1", // bootstrap
+            "1.4.0", //tailwind
+        ]
+    }
+
+    // fn get() {
+    //     // Option()
+    // }
+
+    fn get() -> Option<std::string::String> { todo!() }
 }
