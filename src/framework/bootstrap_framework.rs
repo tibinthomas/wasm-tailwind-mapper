@@ -82,14 +82,14 @@ impl<'a> BootstrapFramework<'a> {
             ("form-row"         , "flex flex-wrap -mr-1 -ml-1"),
             ("form-check"       , "relative block mb-2"),
             ("form-check-label" , "text-gray-700 pl-6 mb-0"),
-            ("form-check-input" , "absolute mt-1 -ml-6"),
+            ("form-check-input" , 'absolute mt-1 -ml-6"),
 
             ("form-check-inline" , "inline-block mr-2"),
             ("valid-feedback"    , "hidden mt-1 text-sm text-green"),
-            ("valid-tooltip"     , "absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-green-700"),
+            ("valid-tooltip"     , 'absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-green-700"),
             ("is-valid"          , "bg-green-700"),
             ("invalid-feedback"  , "hidden mt-1 text-sm text-red"),
-            ("invalid-tooltip"   , "absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-red-700"),
+            ("invalid-tooltip"   , 'absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-red-700"),
             ("is-invalid"        , "bg-red-700"),
         ])
     }
@@ -145,8 +145,8 @@ impl<'a> BootstrapFramework<'a> {
             //http://getbootstrap.com/docs/4.0/content/tables/
             ("table"    , "w-full max-w-full mb-4 bg-transparent"),
             ("table-sm", "p-1"),
-            // 'table-bordered' , '',
-            // 'table-striped' , "",
+            // "table-bordered" , "",
+            // "table-striped" , "",
             ("table-responsive"                , "block w-full overflow-auto scrolling-touch"),
             ("table-responsive-{regex_string}" , "block w-full overflow-auto scrolling-touch"),
 
@@ -164,7 +164,7 @@ impl<'a> BootstrapFramework<'a> {
             ("collapsing" , "relative h-0 overflow-hidden "), //there should be a h-0
 
             //http://getbootstrap.com/docs/4.0/utilities/close-icon/
-            ("close" , "absolute top-0 bottom-0 right-0 px-4 py-3"),
+            ("close" , 'absolute top-0 bottom-0 right-0 px-4 py-3"),
 
             //http://getbootstrap.com/docs/4.0/components/jumbotron/
             ("jumbotron"       , "py-8 px-4 md:py-16 md:px-8 mb-8 bg-gray-200 rounded"),
@@ -189,6 +189,583 @@ impl<'a> BootstrapFramework<'a> {
         return items;
     }
 
+    protected fn grid()
+    {
+        items = HashMap::from([
+            ("row" , "flex flex-wrap "),
+            ("col" , "relative flex-grow max-w-full flex-1 px-4"),
+        ]);
+
+        //col-(xs|sm|md|lg|xl) = (sm|md|lg|xl):flex-grow
+        //ml-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:ml-auto
+        //mr-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:mr-auto
+        foreach (this->mediaOptions as btMedia , twMedia) {
+            items["col-".btMedia] = "relative ".twMedia.":flex-grow ".twMedia.":flex-1";
+            items["ml-".btMedia."-auto"] = twMedia.":ml-auto";
+            items["mr-".btMedia."-auto"] = twMedia.":mr-auto";
+
+            //col-btElem
+            //col-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):w-twElem
+            //offset-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):mx-auto
+            foreach (this->grid as btElem , twElem) {
+                if (btMedia === "xs") {
+                    items["col-".btElem] = "w-".twElem;
+                }
+
+                items["col-".btMedia."-".btElem] = twMedia.":w-".twElem." pr-4 pl-4";
+
+                //might work :)
+                items["offset-".btMedia."-".btElem] = twMedia.":mx-".twElem;
+            }
+        }
+
+        return items;
+    }
+
+     fn mediaObject()
+    {
+        //http://getbootstrap.com/docs/4.0/layout/media-object/
+        return HashMap::from[
+            ("media"      , "flex items-start"),
+            ("media-body" , "flex-1"),
+        ];
+    }
+
+     fn borders()
+    {
+        items = [];
+
+        foreach (HashMap::from[
+            ("top" , "t"),
+            ("right" , "r"),
+            ("bottom" , "b"),
+            ("left" , "l"),
+        ] as btSide , twSide) {
+            items["border-".btSide] = "border-".twSide;
+            items["border-".btSide."-0"] = "border-".twSide."-0";
+        }
+
+        foreach (this->colors as btColor , twColor) {
+            items["border-".btColor] = "border-".twColor;
+        }
+
+        foreach (HashMap::from[
+            ("top" , "t"),
+            ("right" , "r"),
+            ("bottom" , "b"),
+            ("left" , "l"),
+            ("circle" , "full"),
+            ("pill" , "full py-2 px-4"),
+            ("0" , "none"),
+        ] as btStyle , twStyle) {
+            items["rounded-".btStyle] = "rounded-".twStyle;
+        }
+
+        return items;
+    }
+
+     fn colors()
+    {
+        items = [];
+
+        foreach (this->colors as btColor , twColor) {
+            items["text-".btColor] = "text-".twColor;
+            items["bg-".btColor] = "bg-".twColor;
+            items["table-".btColor] = "bg-".twColor;
+            // items["bg-gradient-".btColor] = "bg-".twColor;
+        }
+
+        return items;
+    }
+
+     fn display()
+    {
+        //.d-none
+        //.d-{sm,md,lg,xl}-none
+        items = [];
+
+        foreach (HashMap::from[
+            ("none" , "hidden"),
+            ("inline" , "inline"),
+            ("inline-block" , "inline-block"),
+            ("block" , "block"),
+            ("table" , "table"),
+            ("table-cell" , "table-cell"),
+            ("table-row" , "table-row"),
+            ("flex" , "flex"),
+            ("inline-flex" , "inline-flex"),
+        ] as btElem , twElem) {
+            items["d-".btElem] = twElem;
+
+            foreach (this->mediaOptions as btMedia , twMedia) {
+                items["d-".btMedia."-".btElem] = twMedia.":".twElem;
+            }
+        }
+
+        return items;
+    }
+
+     fn flexElements()
+    {
+        items = [];
+
+        foreach (array_merge(this->mediaOptions, ["",""]) as btMedia , twMedia) {
+            foreach (HashMap::from[("row", "row-reverse"), ("column", "column-reverse")] as key) {
+                items["flex".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."flex-".str_replace("column", "col", key);
+            }
+
+            foreach (["grow-0", "grow-1", "shrink-0", "shrink-1"] as key) {
+                items["flex".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."flex-".str_replace("-1", "", key);
+            }
+
+            foreach (["start", "end", "center", "between", "around"] as key) {
+                items["justify-content".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."justify-".key;
+            }
+
+            foreach (["start", "end", "center", "stretch", "baseline"] as key) {
+                items["align-items".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."items-".key;
+            }
+
+            foreach (["start", "end", "center", "stretch", "baseline"] as key) {
+                items["align-content".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."content-".key;
+            }
+
+            foreach (["start", "end", "center", "stretch", "baseline"] as key) {
+                items["align-self".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."self-".key;
+            }
+
+            items["flex".(empty(btMedia) ? "" : "-").btMedia."-wrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-wrap";
+            items["flex".(empty(btMedia) ? "" : "-").btMedia."-wrap-reverse"] = (empty(twMedia) ? "" : twMedia.":")."flex-wrap-reverse";
+            items["flex".(empty(btMedia) ? "" : "-").btMedia."-nowrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-no-wrap";
+
+            items["flex".(empty(btMedia) ? "" : "-").btMedia."-nowrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-no-wrap";
+
+            if (btMedia != "") {
+                items["order-".btMedia."-{regex_number}"] = twMedia.":order-{regex_number}";
+            }
+        }
+
+        return items;
+    }
+
+     fn sizing()
+    {
+        items = [];
+
+        foreach (HashMap::from[
+            ("25" , "1/4"),
+            ("50" , "1/2"),
+            ("75" , "3/4"),
+            ("100" , "full"),
+        ] as btClass , twClass) {
+            items["w-".btClass] = "w-".twClass;
+
+            //no percentages in TW for heights except for full
+            if (btClass == 100) {
+                items["h-".btClass] = "h-".twClass;
+            }
+        }
+
+        items["mw-100"] = "max-w-full";
+        items["mh-100"] = "max-h-full";
+
+        return items;
+    }
+
+     fn spacing()
+    {
+        items = [];
+        spacingProperties = ["p", "m"];
+
+        foreach (spacingProperties as property) {
+            foreach (this->spacings as btSpacing , twSpacing) {
+                items[property."-".btSpacing] = property."-".twSpacing;
+            }
+        }
+
+        foreach (spacingProperties as property) {
+            foreach (this->mediaOptions as btMedia , twMedia) {
+                foreach (this->spacings as btSpacing , twSpacing) {
+                    items[property."-".btMedia."-".btSpacing] = twMedia.":".property."-".twSpacing;
+                    items[property."{regex_string}-".btMedia."-".btSpacing] = twMedia.":".property."{regex_string}-".twSpacing;
+                }
+
+                items[property."{regex_string}-".btMedia."-auto"] = twMedia.":".property."{regex_string}-auto";
+            }
+        }
+
+        return items;
+    }
+
+     fn text()
+    {
+        items = HashMap::from[
+            ("text-nowrap"   , "whitespace-nowrap"),
+            ("text-truncate" , "truncate"),
+
+            ("text-lowercase"  , "lowercase"),
+            ("text-uppercase"  , "uppercase"),
+            ("text-capitalize" , "capitalize"),
+
+            ("initialism" , ""),
+            ("lead"       , "text-xl font-light"),
+            ("small"      , "text-xs"),
+            ("mark"       , ""),
+            ("display-1"  , "text-xl"),
+            ("display-2"  , "text-2xl"),
+            ("display-3"  , "text-3xl"),
+            ("display-4"  , "text-4xl"),
+
+            ("h-1" , "mb-2 font-medium leading-tight text-4xl"),
+            ("h-2" , "mb-2 font-medium leading-tight text-3xl"),
+            ("h-3" , "mb-2 font-medium leading-tight text-2xl"),
+            ("h-4" , "mb-2 font-medium leading-tight text-xl"),
+            ("h-5" , "mb-2 font-medium leading-tight text-lg"),
+            ("h-6" , "mb-2 font-medium leading-tight text-base"),
+
+            ("blockquote"        , "mb-6 text-lg"),
+            ("blockquote-footer" , "block text-gray-"),
+
+            ("font-weight-bold"   , "font-bold"),
+            ("font-weight-normal" , "font-normal"),
+            ("font-weight-300"    , "font-light"),
+            ("font-italic"        , "italic"),
+        ];
+
+        foreach (["left", "right", "center", "justify"] as alignment) {
+            foreach (array_merge(this->mediaOptions, ["",""]) as btMedia , twMedia) {
+                items["text".(empty(btMedia) ? "" : "-".btMedia)."-".alignment] = (empty(twMedia) ? "" : twMedia.":")."text-".alignment;
+            }
+        }
+
+        return items;
+    }
+
+     fn floats()
+    {
+        items = [];
+
+        foreach (this->mediaOptions as btMedia , twMedia) {
+            foreach (["left", "right", "none"] as alignment) {
+                items["float-".btMedia."-".alignment] = twMedia.":float-".alignment;
+            }
+        }
+
+        return items;
+    }
+
+     fn positioning()
+    {
+        items = [];
+
+        foreach (HashMap::from[
+            ("position-static" , "static"),
+            ("position-relative" , "relative"),
+            ("position-absolute" , "absolute"),
+            ("position-fixed" , "fixed"),
+            ("position-sticky" , ""),
+            ("fixed-top" , "top-0"),
+            ("fixed-bottom" , "bottom-0"),
+        ] as btPosition , twPosition) {
+            items[btPosition] = twPosition;
+        }
+
+        return items;
+    }
+
+     fn verticalAlignment()
+    {
+        //same
+        items = [];
+        // foreach ([
+        //     "baseline", "top", "middle", "bottom", "text-top", "text-bottom"
+        // ] as btAlign, twAlign) {
+        //     items['align-".btAlign] = 'align-".twAlign;
+        // }
+        return items;
+    }
+
+     fn visibility()
+    {
+        //same
+        return [];
+    }
+
+     fn alerts()
+    {
+        items = HashMap::from[
+            ("alert"             , "relative px-3 py-3 mb-4 border rounded"),
+            ("alert-heading"     , ""), //color: inherit
+            ("alert-link"        , "font-bold no-underline text-current"),
+            ("alert-dismissible" , ""),
+        ];
+
+        colors = HashMap::from[
+            ("primary"   , "bg-blue-200 border-blue-300 text-blue-800"),
+            ("secondary" , "bg-gray-300 border-gray-400 text-gray-800"),
+            ("success"   , "bg-green-200 border-green-300 text-green-800"),
+            ("danger"    , "bg-red-200 border-red-300 text-red-800"),
+            ("warning"   , "bg-orange-200 border-orange-300 text-orange-800"),
+            ("info"      , "bg-teal-200 border-teal-300 text-teal-800"),
+            ("light"     , "bg-white text-gray-600"),
+            ("dark"      , "bg-gray-400 border-gray-500 text-gray-900"),
+        ];
+
+        foreach (colors as btColor , twColor) {
+            items["alert-".btColor] = twColor;
+        }
+
+        return items;
+    }
+
+     fn badges()
+    {
+        items = HashMap::from[
+            ("badge"      , "inline-block p-1 text-center font-semi-bold text-sm align-baseline leading-none rounded"),
+            ("badge-pill" , "rounded-full py-1 px-3"),
+        ];
+
+        colors = HashMap::from[
+            ("primary"   , "bg-blue-500 text-white hover:bg-blue-600"),
+            ("secondary" , "bg-gray-600 text-white hover:bg-gray-700"),
+            ("success"   , "bg-green-500 text-white hover:green-600"),
+            ("danger"    , "bg-red-600 text-white hover:bg-red-700"),
+            ("warning"   , "bg-orange-400 text-black hover:bg-orange-500"),
+            ("info"      , "bg-teal-500 text-white hover:bg-teal-600"),
+            ("light"     , "bg-gray-100 text-gray-800 hover:bg-gray-200"),
+            ("dark"      , "bg-gray-900 text-white"),
+        ];
+
+        foreach (colors as btColor , twColor) {
+            items["badge-".btColor] = twColor;
+        }
+
+        return items;
+    }
+
+     fn breadcrumb()
+    {
+        return HashMap::from[
+            ("breadcrumb"     , "flex flex-wrap list-reset pt-3 pb-3 py-4 px-4 mb-4 bg-gray-200 rounded"),
+            ("breadcrumb-item", "inline-block px-2 py-2 text-gray-700"),
+        ];
+    }
+
+     fn buttons()
+    {
+        items = HashMap::from[
+            ("btn"                , "inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded {tailwindo|py-1 px-3 leading-normal} no-underline"),
+            ("btn-group"          , "relative inline-flex align-middle"),
+            ("btn-group-vertical" , "relative inline-flex align-middle flex-col items-start justify-center"),
+            ("btn-toolbar"        , "flex flex-wrap justify-start"),
+            ("btn-link"           , "font-normal text-blue-700 bg-transparent"),
+            ("btn-block"          , "block w-full"),
+        ];
+
+        foreach (HashMap::from[
+            ("sm" , "{tailwindo|py-1 px-2 leading-tight} text-xs "),
+            ("lg" , "{tailwindo|py-3 px-4 leading-tight} text-xl"),
+        ] as btMedia , twClasses) {
+            items["btn-".btMedia] = twClasses;
+            items["btn-group-".btMedia] = twClasses;
+        }
+
+        colors = HashMap::from[
+            ("primary"   , "bg-blue-600 text-white hover:bg-blue-600"),
+            ("secondary" , "bg-gray-600 text-white hover:bg-gray-700"),
+            ("success"   , "bg-green-500 text-white hover:bg-green-600"),
+            ("danger"    , "bg-red-600 text-white hover:bg-red-700"),
+            ("warning"   , "bg-orange-400 text-black hover:bg-orange-500"),
+            ("info"      , "bg-teal-500 text-white hover:bg-teal-600"),
+            ("light"     , "bg-gray-100 text-gray-800 hover:bg-gray-200"),
+            ("dark"      , "bg-gray-900 text-white hover:bg-gray-900"),
+        ];
+
+        foreach (colors as btColor , twColor) {
+            items["btn-".btColor] = twColor;
+            items["btn-outline-".btColor] = preg_replace_callback("/(?<!hover:)(text-[^\s]+|bg-[^\s]+)/i", fn (m) {
+                if (strpos(m[1], "bg-") !== false) {
+                    color = str_replace("bg-", "", m[1]);
+
+                    return "text-".color." border-".color." hover:bg-".color." hover:text-white";
+                } else {
+                    return "bg-white";
+                }
+            }, twColor);
+        }
+
+        return items;
+    }
+
+     fn cards()
+    {
+        return HashMap::from[
+            ("card-deck"  , "flex flex-row flex-wrap md:flex-no-wrap -mx-1"),
+            ("card-group" , "flex flex-col"),
+            ("card"       , fn () {
+                if (this->isInLastSearches("card-deck")) {
+                    return "relative block md:flex w-full md:min-w-0 md:mx-4 flex-col flex-no-shrink flex-grow rounded break-words border bg-white border-1 border-gray-300";
+                } else {
+                    return "relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300";
+                }
+            }),
+            ("card-body"         , "flex-auto p-6"),
+            ("card-title"        , "mb-3"),
+            ("card-text"         , "mb-0"),
+            ("card-subtitle"     , "-mt-2 mb-0"),
+            ("card-link"         , "ml-6"),
+            ("card-header"       , "py-3 px-6 mb-0 bg-gray-200 border-b-1 border-gray-300 text-gray-900"),
+            ("card-footer"       , "py-3 px-6 bg-gray-200 border-t-1 border-gray-300"),
+            ("card-header-tabs"  , "border-b-0 -ml-2 -mb-3"),
+            ("card-header-pills" , "-ml-3 -mr-3"),
+            ("card-img-overlay"  , "absolute inset-y-0 inset-x-0 p-6"),
+            ("card-img"          , "w-full rounded"),
+            ("card-img-top"      , "w-full rounded rounded-t"),
+            ("card-img-bottom"   , "w-full rounded rounded-b"),
+        ];
+    }
+
+     fn dropdowns()
+    {
+        return HashMap::from[
+            ("dropdown"         , "relative"),
+            ("dropup"           , "relative"),
+            ("dropdown-toggle"  , " inline-block w-0 h-0 ml-1 align border-b-0 border-t-1 border-r-1 border-l-1"),
+            ("dropdown-menu"    , " absolute left-0 z-50 float-left hidden list-reset	 py-2 mt-1 text-base bg-white border border-gray-300 rounded"),
+            ("dropdown-divider" , "h-0 my-2 overflow-hidden border-t-1 border-gray-300"),
+            ("dropdown-item"    , "block w-full py-1 px-6 font-normal text-gray-900 whitespace-no-wrap border-0"),
+            ("dropdown-header"  , "block py-2 px-6 mb-0 text-sm text-gray-800 whitespace-no-wrap"),
+        ];
+    }
+
+     fn forms()
+    {
+        return HashMap::from[
+            ("form-group"         , "mb-4"),
+            ("form-control"       , "block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"),
+            ("form-control-lg"    , "py-2 px-4 text-lg leading-normal rounded"),
+            ("form-control-sm"    , "py-1 px-2 text-sm leading-normal rounded"),
+            ("form-control-file"  , "block appearance-none"),
+            ("form-control-range" , "block appearance-none"),
+
+            ("form-inline" , "flex items-center"),
+
+            ("col-form-label"    , "pt-2 pb-2 mb-0 leading-normal"),
+            ("col-form-label-lg" , "pt-3 pb-3 mb-0 leading-normal"),
+            ("col-form-label-sm" , "pt-1 pb-1 mb-0 leading-normal"),
+
+            ("col-form-legend"    , "pt-2 pb-2 mb-0 text-base"),
+            ("col-form-plaintext" , "pt-2 pb-2 mb-0 leading-normal bg-transparent border-transparent border-r-0 border-l-0 border-t border-b"),
+
+            ("form-text"        , "block mt-1"),
+            ("form-row"         , "flex flex-wrap -mr-1 -ml-1"),
+            ("form-check"       , "relative block mb-2"),
+            ("form-check-label" , "text-gray-700 pl-6 mb-0"),
+            ("form-check-input" , "absolute mt-1 -ml-6"),
+
+            ("form-check-inline" , "inline-block mr-2"),
+            ("valid-feedback"    , "hidden mt-1 text-sm text-green"),
+            ("valid-tooltip"     , "absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-green-700"),
+            ("is-valid"          , "bg-green-700"),
+            ("invalid-feedback"  , "hidden mt-1 text-sm text-red"),
+            ("invalid-tooltip"   , "absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-red-700"),
+            ("is-invalid"        , "bg-red-700"),
+        ];
+    }
+
+     fn inputGroups()
+    {
+        return HashMap::from[
+            ("input-group"          , "relative flex items-stretch w-full"),
+            ("input-group-addon"    , "py-1 px-2 mb-1 text-base font-normal leading-normal text-gray-900 text-center bg-gray-300 border border-4 border-gray-100 rounded"),
+            ("input-group-addon-lg" , "py-2 px-3 mb-0 text-lg"),
+            ("input-group-addon-sm" , "py-3 px-4 mb-0 text-lg"),
+        ];
+    }
+
+     fn listGroups()
+    {
+        items = HashMap::from[
+            ("list-group"             , "flex flex-col pl-0 mb-0 border rounded border-gray-300"),
+            ("list-group-item-action" , "w-full"),
+            ("list-group-item"        , "relative block py-3 px-6 -mb-px border border-r-0 border-l-0 border-gray-300 no-underline"),
+            ("list-group-flush"       , ""),
+        ];
+
+        //TODO
+        foreach (this->colors as btColor , twColor) {
+            if (btColor === "dark") {
+                items["list-group-item-".btColor] = "text-white bg-gray-700";
+            } elseif (btColor == "light") {
+                items["list-group-item-".btColor] = "text-black bg-gray-200";
+            } else {
+                items["list-group-item-".btColor] = "bg-".twColor."-200 text-".twColor."-900";
+            }
+        }
+
+        return items;
+    }
+
+     fn modals()
+    {
+        //TODO
+        return [];
+    }
+
+     fn navs()
+    {
+        items = HashMap::from[
+            ("nav"           , "flex flex-wrap list-none pl-0 mb-0"),
+            ("nav-tabs"      , "border border-t-0 border-r-0 border-l-0 border-b-1 border-gray-200"),
+            ("nav-pills"     , ""),
+            ("nav-fill"      , ""),
+            ("nav-justified" , ""),
+        ];
+
+        items["nav-link"] = fn () {
+            navLinkClasses = "inline-block py-2 px-4 no-underline";
+            if (this->isInLastSearches("nav-tabs", 5)) {
+                navLinkClasses .= " border border-b-0 mx-1 rounded rounded-t";
+            } elseif (this->isInLastSearches("nav-pills", 5)) {
+                navLinkClasses .= " border border-blue bg-blue rounded text-white mx-1";
+            }
+
+            return navLinkClasses;
+        };
+
+        items["nav-item"] = fn () {
+            navItemClasses = "";
+
+            if (this->isInLastSearches("nav-tabs", 5)) {
+                navItemClasses .= "-mb-px";
+            } elseif (this->isInLastSearches("nav-fill", 5)) {
+                navItemClasses .= " flex-auto text-center";
+            } elseif (this->isInLastSearches("nav-justified", 5)) {
+                navItemClasses .= " flex-grow text-center";
+            }
+
+            return navItemClasses;
+        };
+
+        items["navbar"] = "relative flex flex-wrap items-center content-between py-3 px-4";
+        items["navbar-brand"] = "inline-block pt-1 pb-1 mr-4 text-lg whitespace-no-wrap";
+        items["navbar-nav"] = "flex flex-wrap list-reset pl-0 mb-0";
+        items["navbar-text"] = "inline-block pt-2 pb-2";
+        items["navbar-dark"] = "text-white";
+        items["navbar-light"] = "text-black";
+        items["navbar-collapse"] = "flex-grow items-center";
+        items["navbar-expand"] = "flex-no-wrap content-start";
+        items["navbar-expand-{regex_string}"] = "";
+        items["navbar-toggler"] = "py-1 px-2 text-md leading-normal bg-transparent border border-transparent rounded";
+
+        //for now
+        items["collapse"] = "hidden";
+        items["navbar-toggler-icon"] = "px-5 py-1 border border-gray-600 rounded";
+
+        return items;
+    }
+
+
 }
 
 impl<'a> Framework<'a> for BootstrapFramework<'a> {
@@ -198,16 +775,16 @@ impl<'a> Framework<'a> for BootstrapFramework<'a> {
             ("h1", ""),
             ("fieldset", ""),
             ("del", ""),
-            ("a" ,""),
+            ('a" ,""),
             ("p" ,""),
         ])
     }
 
-    fn framework_name() -> &'static str {
+    fn framework_name() -> &"static str {
         "Bootstrap"
     }
 
-    fn supported_version() -> Vec<&'static str> {
+    fn supported_version() -> Vec<&"static str> {
         vec![
             "4.4.1", // bootstrap
             "1.4.0", //tailwind
