@@ -180,8 +180,8 @@ impl<'a> BootstrapFramework<'a> {
             items[bt_class] = tw_class;
         }
 
-        foreach (main_classes_each_screen as bt_class , tw_class) {
-            foreach (self.media_options as bt_media , tw_media) {
+        for (main_classes_each_screen as bt_class , tw_class) {
+            for (self.media_options as bt_media , tw_media) {
                 items[str_replace("{screen}", bt_media, bt_class)] = str_replace("{screen}", tw_media, tw_class);
             }
         }
@@ -199,7 +199,7 @@ impl<'a> BootstrapFramework<'a> {
         //col-(xs|sm|md|lg|xl) = (sm|md|lg|xl):flex-grow
         //ml-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:ml-auto
         //mr-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:mr-auto
-        foreach (this->mediaOptions as btMedia , twMedia) {
+        for (this->mediaOptions as btMedia , twMedia) {
             items["col-".btMedia] = "relative ".twMedia.":flex-grow ".twMedia.":flex-1";
             items["ml-".btMedia."-auto"] = twMedia.":ml-auto";
             items["mr-".btMedia."-auto"] = twMedia.":mr-auto";
@@ -225,10 +225,10 @@ impl<'a> BootstrapFramework<'a> {
      fn mediaObject()
     {
         //http://getbootstrap.com/docs/4.0/layout/media-object/
-        return HashMap::from[
+        return HashMap::from([
             ("media"      , "flex items-start"),
             ("media-body" , "flex-1"),
-        ];
+        ]);
     }
 
      fn borders()
@@ -500,7 +500,7 @@ impl<'a> BootstrapFramework<'a> {
             ("alert-dismissible" , ""),
         ];
 
-        colors = HashMap::from[
+        colors = HashMap::from([
             ("primary"   , "bg-blue-200 border-blue-300 text-blue-800"),
             ("secondary" , "bg-gray-300 border-gray-400 text-gray-800"),
             ("success"   , "bg-green-200 border-green-300 text-green-800"),
@@ -509,7 +509,7 @@ impl<'a> BootstrapFramework<'a> {
             ("info"      , "bg-teal-200 border-teal-300 text-teal-800"),
             ("light"     , "bg-white text-gray-600"),
             ("dark"      , "bg-gray-400 border-gray-500 text-gray-900"),
-        ];
+        ]);
 
         foreach (colors as btColor , twColor) {
             items["alert-".btColor] = twColor;
@@ -520,12 +520,12 @@ impl<'a> BootstrapFramework<'a> {
 
      fn badges()
     {
-        items = HashMap::from[
+        items = HashMap::from([
             ("badge"      , "inline-block p-1 text-center font-semi-bold text-sm align-baseline leading-none rounded"),
             ("badge-pill" , "rounded-full py-1 px-3"),
-        ];
+        ]);
 
-        colors = HashMap::from[
+        colors = HashMap::from([
             ("primary"   , "bg-blue-500 text-white hover:bg-blue-600"),
             ("secondary" , "bg-gray-600 text-white hover:bg-gray-700"),
             ("success"   , "bg-green-500 text-white hover:green-600"),
@@ -534,7 +534,7 @@ impl<'a> BootstrapFramework<'a> {
             ("info"      , "bg-teal-500 text-white hover:bg-teal-600"),
             ("light"     , "bg-gray-100 text-gray-800 hover:bg-gray-200"),
             ("dark"      , "bg-gray-900 text-white"),
-        ];
+        ]);
 
         foreach (colors as btColor , twColor) {
             items["badge-".btColor] = twColor;
@@ -545,32 +545,32 @@ impl<'a> BootstrapFramework<'a> {
 
      fn breadcrumb()
     {
-        return HashMap::from[
+        return HashMap::from([
             ("breadcrumb"     , "flex flex-wrap list-reset pt-3 pb-3 py-4 px-4 mb-4 bg-gray-200 rounded"),
             ("breadcrumb-item", "inline-block px-2 py-2 text-gray-700"),
-        ];
+        ]);
     }
 
      fn buttons()
     {
-        items = HashMap::from[
+        items = HashMap::from([
             ("btn"                , "inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded {tailwindo|py-1 px-3 leading-normal} no-underline"),
             ("btn-group"          , "relative inline-flex align-middle"),
             ("btn-group-vertical" , "relative inline-flex align-middle flex-col items-start justify-center"),
             ("btn-toolbar"        , "flex flex-wrap justify-start"),
             ("btn-link"           , "font-normal text-blue-700 bg-transparent"),
             ("btn-block"          , "block w-full"),
-        ];
+        ]);
 
-        foreach (HashMap::from[
+        foreach (HashMap::from([
             ("sm" , "{tailwindo|py-1 px-2 leading-tight} text-xs "),
             ("lg" , "{tailwindo|py-3 px-4 leading-tight} text-xl"),
-        ] as btMedia , twClasses) {
+        ]) as btMedia , twClasses) {
             items["btn-".btMedia] = twClasses;
             items["btn-group-".btMedia] = twClasses;
         }
 
-        colors = HashMap::from[
+        colors = HashMap::from([
             ("primary"   , "bg-blue-600 text-white hover:bg-blue-600"),
             ("secondary" , "bg-gray-600 text-white hover:bg-gray-700"),
             ("success"   , "bg-green-500 text-white hover:bg-green-600"),
@@ -579,7 +579,7 @@ impl<'a> BootstrapFramework<'a> {
             ("info"      , "bg-teal-500 text-white hover:bg-teal-600"),
             ("light"     , "bg-gray-100 text-gray-800 hover:bg-gray-200"),
             ("dark"      , "bg-gray-900 text-white hover:bg-gray-900"),
-        ];
+        ]);
 
         foreach (colors as btColor , twColor) {
             items["btn-".btColor] = twColor;
@@ -599,7 +599,7 @@ impl<'a> BootstrapFramework<'a> {
 
      fn cards()
     {
-        return HashMap::from[
+        return HashMap::from([
             ("card-deck"  , "flex flex-row flex-wrap md:flex-no-wrap -mx-1"),
             ("card-group" , "flex flex-col"),
             ("card"       , fn () {
@@ -622,12 +622,12 @@ impl<'a> BootstrapFramework<'a> {
             ("card-img"          , "w-full rounded"),
             ("card-img-top"      , "w-full rounded rounded-t"),
             ("card-img-bottom"   , "w-full rounded rounded-b"),
-        ];
+        ]);
     }
 
      fn dropdowns()
     {
-        return HashMap::from[
+        return HashMap::from([
             ("dropdown"         , "relative"),
             ("dropup"           , "relative"),
             ("dropdown-toggle"  , " inline-block w-0 h-0 ml-1 align border-b-0 border-t-1 border-r-1 border-l-1"),
@@ -635,12 +635,12 @@ impl<'a> BootstrapFramework<'a> {
             ("dropdown-divider" , "h-0 my-2 overflow-hidden border-t-1 border-gray-300"),
             ("dropdown-item"    , "block w-full py-1 px-6 font-normal text-gray-900 whitespace-no-wrap border-0"),
             ("dropdown-header"  , "block py-2 px-6 mb-0 text-sm text-gray-800 whitespace-no-wrap"),
-        ];
+        ]);
     }
 
      fn forms()
     {
-        return HashMap::from[
+        return HashMap::from([
             ("form-group"         , "mb-4"),
             ("form-control"       , "block appearance-none w-full py-1 px-2 mb-1 text-base leading-normal bg-white text-gray-800 border border-gray-200 rounded"),
             ("form-control-lg"    , "py-2 px-4 text-lg leading-normal rounded"),
@@ -670,27 +670,27 @@ impl<'a> BootstrapFramework<'a> {
             ("invalid-feedback"  , "hidden mt-1 text-sm text-red"),
             ("invalid-tooltip"   , "absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-red-700"),
             ("is-invalid"        , "bg-red-700"),
-        ];
+        ]);
     }
 
      fn inputGroups()
     {
-        return HashMap::from[
+        return HashMap::from([
             ("input-group"          , "relative flex items-stretch w-full"),
             ("input-group-addon"    , "py-1 px-2 mb-1 text-base font-normal leading-normal text-gray-900 text-center bg-gray-300 border border-4 border-gray-100 rounded"),
             ("input-group-addon-lg" , "py-2 px-3 mb-0 text-lg"),
             ("input-group-addon-sm" , "py-3 px-4 mb-0 text-lg"),
-        ];
+        ]);
     }
 
      fn listGroups()
     {
-        items = HashMap::from[
+        items = HashMap::from([
             ("list-group"             , "flex flex-col pl-0 mb-0 border rounded border-gray-300"),
             ("list-group-item-action" , "w-full"),
             ("list-group-item"        , "relative block py-3 px-6 -mb-px border border-r-0 border-l-0 border-gray-300 no-underline"),
             ("list-group-flush"       , ""),
-        ];
+        ]);
 
         //TODO
         foreach (this->colors as btColor , twColor) {
@@ -714,13 +714,13 @@ impl<'a> BootstrapFramework<'a> {
 
      fn navs()
     {
-        items = HashMap::from[
+        items = HashMap::from([
             ("nav"           , "flex flex-wrap list-none pl-0 mb-0"),
             ("nav-tabs"      , "border border-t-0 border-r-0 border-l-0 border-b-1 border-gray-200"),
             ("nav-pills"     , ""),
             ("nav-fill"      , ""),
             ("nav-justified" , ""),
-        ];
+        ]);
 
         items["nav-link"] = fn () {
             navLinkClasses = "inline-block py-2 px-4 no-underline";
