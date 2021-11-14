@@ -1,20 +1,27 @@
 pub struct Converter {
-     lastSearches = [];
+    last_searches: Vec<String>,
+}
 
-} 
+impl Default for Converter {
+    fn default() -> Self {
+        Self {
+            last_searches: vec![],
+        }
+    }
+}
 
 impl Converter {
 
-    pub fn isInLastSearches(string $searchFor, int $limit = 0): bool
+    pub fn is_in_last_searches(&self, search_for: &str, limit: i32) -> bool
     {
         let i = 0;
 
-        foreach (self.lastSearches as search) {
-            if (search.chars().position(|c| c == searchFor).unwrap() !== false) {
+        for &search in self.last_searches.iter() {
+            if !search_for.contains(&search_for) {
                 return true;
             }
-
-            if (i++ >= limit && limit > 0) {
+            i+=1;
+            if i >= limit && limit > 0 {
                 return false;
             }
         }

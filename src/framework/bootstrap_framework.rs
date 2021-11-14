@@ -82,14 +82,14 @@ impl<'a> BootstrapFramework<'a> {
             ("form-row"         , "flex flex-wrap -mr-1 -ml-1"),
             ("form-check"       , "relative block mb-2"),
             ("form-check-label" , "text-gray-700 pl-6 mb-0"),
-            ("form-check-input" , 'absolute mt-1 -ml-6"),
+            ("form-check-input" , "absolute mt-1 -ml-6"),
 
             ("form-check-inline" , "inline-block mr-2"),
             ("valid-feedback"    , "hidden mt-1 text-sm text-green"),
-            ("valid-tooltip"     , 'absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-green-700"),
+            ("valid-tooltip"     , "absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-green-700"),
             ("is-valid"          , "bg-green-700"),
             ("invalid-feedback"  , "hidden mt-1 text-sm text-red"),
-            ("invalid-tooltip"   , 'absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-red-700"),
+            ("invalid-tooltip"   , "absolute z-10 hidden w-4 font-normal leading-normal text-white rounded p-2 bg-red-700"),
             ("is-invalid"        , "bg-red-700"),
         ])
     }
@@ -114,10 +114,13 @@ impl<'a> BootstrapFramework<'a> {
     }
 
     fn general(&self) -> HashMap<&'a str, &'a str> {
+        let converter = Converter {
+            last_searches: vec![],
+        };
         let main_classes = HashMap::from([
             ("container-fluid", "container max-w-full mx-auto sm:px-4"),
             ("container",  {
-                if Converter::isInLastSearches("jumbotron", 1) {
+                if converter.is_in_last_searches("jumbotron", 1) {
                    "container mx-auto max-w-2xl sm:px-4"
                 } else {
                  "container mx-auto sm:px-4"
@@ -164,7 +167,7 @@ impl<'a> BootstrapFramework<'a> {
             ("collapsing" , "relative h-0 overflow-hidden "), //there should be a h-0
 
             //http://getbootstrap.com/docs/4.0/utilities/close-icon/
-            ("close" , 'absolute top-0 bottom-0 right-0 px-4 py-3"),
+            ("close" , "absolute top-0 bottom-0 right-0 px-4 py-3"),
 
             //http://getbootstrap.com/docs/4.0/components/jumbotron/
             ("jumbotron"       , "py-8 px-4 md:py-16 md:px-8 mb-8 bg-gray-200 rounded"),
@@ -175,23 +178,26 @@ impl<'a> BootstrapFramework<'a> {
             ("container-{screen}"       , "container min-w-{screen} mx-auto sm:px-4")
         ]);
 
-        let items = vec![];
-        foreach (main_classes as bt_class ,tw_class) {
-            items[bt_class] = tw_class;
+        let items: HashMap<&str, &str> = HashMap::new();
+        for (bt_class, tw_class) in main_classes {
+            items.insert(bt_class, tw_class);
         }
 
-        foreach (main_classes_each_screen as bt_class , tw_class) {
-            foreach (self.media_options as bt_media , tw_media) {
-                items[str_replace("{screen}", bt_media, bt_class)] = str_replace("{screen}", tw_media, tw_class);
+        
+        for (bt_class, tw_class) in main_classes_each_screen {
+            for (bt_media, tw_media) in self.media_options {
+                items.insert(
+                    &(str::replace("{screen}", bt_media, bt_class)), 
+                    &(str::replace("{screen}", tw_media, tw_class))
+                );
             }
         }
-
         return items;
     }
 
-    protected fn grid()
+    fn grid(&self)
     {
-        items = HashMap::from([
+        let items = HashMap::from([
             ("row" , "flex flex-wrap "),
             ("col" , "relative flex-grow max-w-full flex-1 px-4"),
         ]);
@@ -199,57 +205,57 @@ impl<'a> BootstrapFramework<'a> {
         //col-(xs|sm|md|lg|xl) = (sm|md|lg|xl):flex-grow
         //ml-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:ml-auto
         //mr-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:mr-auto
-        foreach (this->mediaOptions as btMedia , twMedia) {
-            items["col-".btMedia] = "relative ".twMedia.":flex-grow ".twMedia.":flex-1";
-            items["ml-".btMedia."-auto"] = twMedia.":ml-auto";
-            items["mr-".btMedia."-auto"] = twMedia.":mr-auto";
+        for (btMedia, twMedia) in self.media_options {
+            items.insert("col-"+btMedia, "relative "+twMedia+":flex-grow "+twMedia+":flex-1");
+            items.insert("ml-"+btMedia+"-auto", twMedia+":ml-auto");
+            items.insert("mr-"+btMedia+"-auto", twMedia+":mr-auto");
 
             //col-btElem
             //col-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):w-twElem
             //offset-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):mx-auto
-            foreach (this->grid as btElem , twElem) {
-                if (btMedia === "xs") {
-                    items["col-".btElem] = "w-".twElem;
+            for (btElem, twElem) in self.grid {
+                if (btMedia == "xs") {
+                    items.insert("col-"+btElem, "w-"+twElem);
                 }
 
-                items["col-".btMedia."-".btElem] = twMedia.":w-".twElem." pr-4 pl-4";
+                items.insert("col-"+btMedia+"-".btElem, wMedia+":w-"+twElem+" pr-4 pl-4");
 
                 //might work :)
-                items["offset-".btMedia."-".btElem] = twMedia.":mx-".twElem;
+                items.insert("offset-"+btMedia+"-"+btElem, twMedia+":mx-"+twElem);
             }
         }
 
         return items;
     }
 
-     fn mediaObject()
+     fn media_object() -> HashMap<&str, &str>
     {
         //http://getbootstrap.com/docs/4.0/layout/media-object/
-        return HashMap::from[
+        HashMap::from([
             ("media"      , "flex items-start"),
             ("media-body" , "flex-1"),
-        ];
+        ])
     }
 
-     fn borders()
+     fn borders(&self)
     {
-        items = [];
+        let items = HashMap::new();
 
-        foreach (HashMap::from[
+        for (btSide , twSide) in HashMap::from([
             ("top" , "t"),
             ("right" , "r"),
             ("bottom" , "b"),
             ("left" , "l"),
-        ] as btSide , twSide) {
-            items["border-".btSide] = "border-".twSide;
-            items["border-".btSide."-0"] = "border-".twSide."-0";
+        ]) {
+            items.insert("border-"+btSide, "border-"+twSide);
+            items.insert("border-"+btSide+"-0", "border-"+twSide+"-0");
         }
 
-        foreach (this->colors as btColor , twColor) {
-            items["border-".btColor] = "border-".twColor;
+        for (btColor , twColor) in self.colors {
+            items["border-"+btColor] = "border-"+twColor;
         }
 
-        foreach (HashMap::from[
+        for (btStyle , twStyle) in HashMap::from([
             ("top" , "t"),
             ("right" , "r"),
             ("bottom" , "b"),
@@ -257,8 +263,8 @@ impl<'a> BootstrapFramework<'a> {
             ("circle" , "full"),
             ("pill" , "full py-2 px-4"),
             ("0" , "none"),
-        ] as btStyle , twStyle) {
-            items["rounded-".btStyle] = "rounded-".twStyle;
+        ]) {
+            items["rounded-"+btStyle] = "rounded-"+twStyle;
         }
 
         return items;
@@ -268,11 +274,11 @@ impl<'a> BootstrapFramework<'a> {
     {
         items = [];
 
-        foreach (this->colors as btColor , twColor) {
-            items["text-".btColor] = "text-".twColor;
-            items["bg-".btColor] = "bg-".twColor;
-            items["table-".btColor] = "bg-".twColor;
-            // items["bg-gradient-".btColor] = "bg-".twColor;
+        for (btColor , twColor) in self.colors {
+            items["text-"+btColor] = "text-"+twColor;
+            items["bg-"+btColor] = "bg-"+twColor;
+            items["table-"+btColor] = "bg-"+twColor;
+            // items["bg-gradient-"+btColor] = "bg-"+twColor;
         }
 
         return items;
@@ -284,7 +290,7 @@ impl<'a> BootstrapFramework<'a> {
         //.d-{sm,md,lg,xl}-none
         items = [];
 
-        foreach (HashMap::from[
+        for (btElem , twElem) in HashMap::from([
             ("none" , "hidden"),
             ("inline" , "inline"),
             ("inline-block" , "inline-block"),
@@ -294,11 +300,11 @@ impl<'a> BootstrapFramework<'a> {
             ("table-row" , "table-row"),
             ("flex" , "flex"),
             ("inline-flex" , "inline-flex"),
-        ] as btElem , twElem) {
-            items["d-".btElem] = twElem;
+        ]) {
+            items["d-"+btElem] = twElem;
 
-            foreach (this->mediaOptions as btMedia , twMedia) {
-                items["d-".btMedia."-".btElem] = twMedia.":".twElem;
+            for (btMedia , twMedia) in self.media_options {
+                items["d-"+btMedia+"-"+btElem] = twMedia+":"+twElem;
             }
         }
 
@@ -480,7 +486,7 @@ impl<'a> BootstrapFramework<'a> {
         // foreach ([
         //     "baseline", "top", "middle", "bottom", "text-top", "text-bottom"
         // ] as btAlign, twAlign) {
-        //     items['align-".btAlign] = 'align-".twAlign;
+        //     items["align-".btAlign] = 'align-".twAlign;
         // }
         return items;
     }
@@ -775,7 +781,7 @@ impl<'a> Framework<'a> for BootstrapFramework<'a> {
             ("h1", ""),
             ("fieldset", ""),
             ("del", ""),
-            ('a" ,""),
+            ("a" ,""),
             ("p" ,""),
         ])
     }
