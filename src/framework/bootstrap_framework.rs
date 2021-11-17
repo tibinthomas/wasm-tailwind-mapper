@@ -2,6 +2,9 @@ use std::{collections::HashMap, hash::Hash};
 use super::traits::{ Framework };
 use super::converter::Converter;
 
+extern crate regex;
+use regex::Regex;
+
 struct BootstrapFramework<'a> {
     media_options: HashMap<&'a str, &'a str>,
     spacings: HashMap<&'a str, &'a str>,
@@ -270,7 +273,7 @@ impl<'a> BootstrapFramework<'a> {
         return items;
     }
 
-     fn colors()
+     fn colors(&self)
     {
         items = [];
 
@@ -284,7 +287,7 @@ impl<'a> BootstrapFramework<'a> {
         return items;
     }
 
-     fn display()
+     fn display(&self)
     {
         //.d-none
         //.d-{sm,md,lg,xl}-none
@@ -311,43 +314,81 @@ impl<'a> BootstrapFramework<'a> {
         return items;
     }
 
-     fn flexElements()
+     fn flexElements(&self)
     {
-        items = [];
+        let items = HashMap::new();
+        let media_options = self.media_options.clone();
+        media_object().insert("", "");
 
-        foreach (array_merge(this->mediaOptions, ["",""]) as btMedia , twMedia) {
-            foreach (HashMap::from[("row", "row-reverse"), ("column", "column-reverse")] as key) {
-                items["flex".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."flex-".str_replace("column", "col", key);
+        for (bt_media , tw_media) in media_options {
+            for (key, _) in HashMap::from([("row", "row-reverse"), ("column", "column-reverse")]) {
+                items.insert((("flex" + if bt_media.is_empty()  { "" } else { "-" }) + bt_media + "-" + key),
+                (if tw_media.is_empty() { "" } else { tw_media + ":" } + "flex-" + str::replace(key, "column", "col")))
             }
 
-            foreach (["grow-0", "grow-1", "shrink-0", "shrink-1"] as key) {
-                items["flex".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."flex-".str_replace("-1", "", key);
+            for key in ["grow-0", "grow-1", "shrink-0", "shrink-1"] {
+                items.insert(
+                    "flex" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-" + key,
+                    if tw_media.is_empty() { "" } else { ":" } + "flex" + str::replace(key, "-1", "")
+                    )
             }
 
-            foreach (["start", "end", "center", "between", "around"] as key) {
-                items["justify-content".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."justify-".key;
+            for key in ["start", "end", "center", "between", "around"].iter() {
+                items.insert(
+                    "justify-content" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-" + key,
+                    if tw_media.is_empty() { "" } else {tw_media + ":" } + "justify-" + key
+                    )
             }
 
-            foreach (["start", "end", "center", "stretch", "baseline"] as key) {
-                items["align-items".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."items-".key;
+            for key in ["start", "end", "center", "stretch", "baseline"].iter() {
+                items.insert(
+                    "align-items" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-" + key,
+                    if tw_media.is_empty() { "" } else {tw_media + ":" } + "items-" + key
+                    );
             }
 
-            foreach (["start", "end", "center", "stretch", "baseline"] as key) {
-                items["align-content".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."content-".key;
+            for key in ["start", "end", "center", "stretch", "baseline"].iter() {
+                items.insert(
+                    "align-content" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-" + key,
+                    if tw_media.is_empty() { "" } else {tw_media + ":" } + "content-" + key
+                    );
             }
 
-            foreach (["start", "end", "center", "stretch", "baseline"] as key) {
-                items["align-self".(empty(btMedia) ? "" : "-").btMedia."-".key] = (empty(twMedia) ? "" : twMedia.":")."self-".key;
+            for key in ["start", "end", "center", "stretch", "baseline"].iter() {
+                items.insert(
+                    "align-self" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-" + key,
+                    if tw_media.is_empty() { "" } else {tw_media + ":" } + "self-" + key
+                    );
             }
 
-            items["flex".(empty(btMedia) ? "" : "-").btMedia."-wrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-wrap";
-            items["flex".(empty(btMedia) ? "" : "-").btMedia."-wrap-reverse"] = (empty(twMedia) ? "" : twMedia.":")."flex-wrap-reverse";
-            items["flex".(empty(btMedia) ? "" : "-").btMedia."-nowrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-no-wrap";
+            items.insert(
+                "flex" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-wrap",
+                if tw_media.is_empty() { "" } else {tw_media + ":" } + "flex-wrap"
+                );
 
-            items["flex".(empty(btMedia) ? "" : "-").btMedia."-nowrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-no-wrap";
+            items.insert(
+                "flex" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-wrap-reverse",
+                if tw_media.is_empty() { "" } else {tw_media + ":" } + "flex-wrap-reverse"
+                );
+
+            items.insert(
+                "flex" + if bt_media.is_empty() { "" } else { "-" } + bt_media + "-nowrap",
+                if tw_media.is_empty() { "" } else {tw_media + ":" } + "flex-no-wrap"
+                );
+
+
+            // items["flex".(empty(btMedia) ? "" : "-").btMedia."-wrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-wrap";
+            // items["flex".(empty(btMedia) ? "" : "-").btMedia."-wrap-reverse"] = (empty(twMedia) ? "" : twMedia.":")."flex-wrap-reverse";
+            // items["flex".(empty(btMedia) ? "" : "-").btMedia."-nowrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-no-wrap";
+
+            // items["flex".(empty(btMedia) ? "" : "-").btMedia."-nowrap"] = (empty(twMedia) ? "" : twMedia.":")."flex-no-wrap";
 
             if (btMedia != "") {
-                items["order-".btMedia."-{regex_number}"] = twMedia.":order-{regex_number}";
+                items.insert(
+                    "order-" + bt_media+ "-{regex_number}",
+                    tw_media + ":order-{regex_number}"
+                    )
+                // items["order-".btMedia."-{regex_number}"] = twMedia.":order-{regex_number}";
             }
         }
 
@@ -356,7 +397,7 @@ impl<'a> BootstrapFramework<'a> {
 
      fn sizing()
     {
-        items = [];
+        let items: [&str; _] = ["sdr"];
 
         foreach (HashMap::from[
             ("25" , "1/4"),
@@ -378,34 +419,33 @@ impl<'a> BootstrapFramework<'a> {
         return items;
     }
 
-     fn spacing()
+     fn spacing(&self)
     {
-        items = [];
-        spacingProperties = ["p", "m"];
+        let items = HashMap::new();
+        let spacing_properties = ["p", "m"];
 
-        foreach (spacingProperties as property) {
-            foreach (this->spacings as btSpacing , twSpacing) {
-                items[property."-".btSpacing] = property."-".twSpacing;
+        for property in spacing_properties.iter() {
+            for (bt_spacing, tw_spacing) in self.spacings {
+                items.insert(property + "-" + bt_spacing, property + "-" + twSpacing);
             }
         }
 
-        foreach (spacingProperties as property) {
-            foreach (this->mediaOptions as btMedia , twMedia) {
-                foreach (this->spacings as btSpacing , twSpacing) {
-                    items[property."-".btMedia."-".btSpacing] = twMedia.":".property."-".twSpacing;
-                    items[property."{regex_string}-".btMedia."-".btSpacing] = twMedia.":".property."{regex_string}-".twSpacing;
+        for property in spacing_properties.iter() {
+            for (bt_media , tw_media) in  self.media_options {
+                for (bt_spacing , tw_spacing) in self.spacings {
+                    items.insert(property + "-" +bt_media+ "-" +bt_spacing, tw_media + ":" + property + "-" + tw_spacing);
+                    items.insert(property + "{regex_string}-" + bt_media + "-" + bt_spacing, tw_media + ":" + property+ "{regex_string}-" + tw_spacing);
                 }
 
-                items[property."{regex_string}-".btMedia."-auto"] = twMedia.":".property."{regex_string}-auto";
+                items.insert(property + "{regex_string}-" + bt_media + "-auto", tw_media + ":" + property + "{regex_string}-auto");
             }
         }
-
-        return items;
+         items
     }
 
      fn text()
     {
-        items = HashMap::from[
+        items = HashMap::from([
             ("text-nowrap"   , "whitespace-nowrap"),
             ("text-truncate" , "truncate"),
 
@@ -436,7 +476,7 @@ impl<'a> BootstrapFramework<'a> {
             ("font-weight-normal" , "font-normal"),
             ("font-weight-300"    , "font-light"),
             ("font-italic"        , "italic"),
-        ];
+        ]);
 
         foreach (["left", "right", "center", "justify"] as alignment) {
             foreach (array_merge(this->mediaOptions, ["",""]) as btMedia , twMedia) {
@@ -559,7 +599,7 @@ impl<'a> BootstrapFramework<'a> {
 
      fn buttons()
     {
-        items = HashMap::from([
+        let items = HashMap::from([
             ("btn"                , "inline-block align-middle text-center select-none border font-normal whitespace-no-wrap rounded {tailwindo|py-1 px-3 leading-normal} no-underline"),
             ("btn-group"          , "relative inline-flex align-middle"),
             ("btn-group-vertical" , "relative inline-flex align-middle flex-col items-start justify-center"),
@@ -568,12 +608,12 @@ impl<'a> BootstrapFramework<'a> {
             ("btn-block"          , "block w-full"),
         ]);
 
-        foreach (HashMap::from([
+        for (bt_media, ts_classes) in [
             ("sm" , "{tailwindo|py-1 px-2 leading-tight} text-xs "),
             ("lg" , "{tailwindo|py-3 px-4 leading-tight} text-xl"),
-        ]) as btMedia , twClasses) {
-            items["btn-".btMedia] = twClasses;
-            items["btn-group-".btMedia] = twClasses;
+        ].iter() {
+            items.insert("btn-" + bt_media, tw_classes);
+            items.insert("btn-group-" + bt_media, tw_classes);
         }
 
         colors = HashMap::from([
@@ -587,9 +627,9 @@ impl<'a> BootstrapFramework<'a> {
             ("dark"      , "bg-gray-900 text-white hover:bg-gray-900"),
         ]);
 
-        foreach (colors as btColor , twColor) {
-            items["btn-".btColor] = twColor;
-            items["btn-outline-".btColor] = preg_replace_callback("/(?<!hover:)(text-[^\s]+|bg-[^\s]+)/i", fn (m) {
+        for (bt_color , tw_color) in colors {
+            items.insert("btn-" + bt_color, tw_color);
+            items.insert("btn-outline-" + bt_color, preg_replace_callback("/(?<!hover:)(text-[^\s]+|bg-[^\s]+)/i", {
                 if (strpos(m[1], "bg-") !== false) {
                     color = str_replace("bg-", "", m[1]);
 

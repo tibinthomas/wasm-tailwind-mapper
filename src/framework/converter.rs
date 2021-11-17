@@ -8,9 +8,16 @@ impl Default for Converter {
             last_searches: vec![],
         }
     }
+
 }
 
 impl Converter {
+
+    fn new() -> Self {
+        Self {
+            last_searches: vec![]
+        }
+    }
 
     pub fn is_in_last_searches(&self, search_for: &str, limit: i32) -> bool
     {
